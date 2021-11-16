@@ -46,4 +46,24 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return employeeRepository.save(employee);
     }
+
+    public int getNumberOfReports(String employeeId) {
+        int accumulatedTotal = 0;
+
+        // Ideally this wouldn't happen, hopefully source doesn't give us nulls in List<>
+        Employee employee = this.read(employeeId);
+        if (employee == null) {
+            throw new RuntimeException("Null employee!");
+        }
+
+        List<Employee> reports = employee.getDirectReports();
+        if (reports != null) {
+            for (Employee reportingEmployee : reports) {
+                accumulatedTotal += 1 + getNumberOfReports(reportingEmployee.getEmployeeId());
+            }
+        }
+
+        return accumulatedTotal;
+    }
+
 }
